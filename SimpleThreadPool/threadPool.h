@@ -1,5 +1,5 @@
-#ifndef POOLTHREAD
-#define POOLTHREAD
+#ifndef THREADPOOL
+#define THREADPOOL
 
 #include <thread>
 #include <vector>
