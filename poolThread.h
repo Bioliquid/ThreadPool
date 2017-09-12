@@ -27,11 +27,6 @@ public:
 	virtual ~ThreadPool();
 
 	void execute(function<void()> const&);
-
-	template<class _FN, class... _ARGS>
-	void runAsync(_FN _fn, _ARGS... _args) {
-		execute(bind(_fn, _args...));
-	}
 };
 
 #endif
