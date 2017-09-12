@@ -24,7 +24,7 @@ int main() {
 	ThreadPool pool(10);
 
 	pool.execute(thread1);
-	pool.runAsync(thread2, 2, 2);
+	pool.runAsync(thread2, 2);
 
 	auto end = std::chrono::system_clock::now();
 	chrono::duration<double> diff = end - start;
