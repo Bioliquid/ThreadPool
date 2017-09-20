@@ -5,7 +5,7 @@ ThreadPool::ThreadPool(size_t numThreads = 1) {
 
 	threads.reserve(numThreads);
 	for (int i = 0; i < numThreads; ++i) {
-		threads.emplace_back(std::thread(&ThreadPool::ThreadLoop, this));
+		threads.emplace_back(&ThreadPool::ThreadLoop, this);
 	}
 }
 
