@@ -5,7 +5,22 @@ ThreadPool::ThreadPool(size_t numThreads = 1) {
 
 	threads.reserve(numThreads);
 	for (int i = 0; i < numThreads; ++i) {
-		threads.emplace_back(std::thread(&ThreadPool::ThreadLoop, this));
+		threads.emplace_back(&ThreadPool::ThreadLoop, this);
+		/*threads.emplace_back([&]() {
+			while (!isTerminated) {
+				std::unique_lock<std::mutex> lockList(function_mutex);
+				funcList.wait(lockList, [&]() {
+					return !functions.empty() && !isTerminated;
+				});
+				if (!functions.empty()) {
+					std::function<void()> job = functions.front();
+					functions.pop();
+					lockList.unlock();
+					job();
+				}
+				lockList.lock();
+			}
+		});*/
 	}
 }
 

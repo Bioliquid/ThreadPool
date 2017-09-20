@@ -28,11 +28,8 @@ int thread3(int a, int b) {
 
 int main() {
 	ThreadPool pool(3);
-	future_ptr<int> f;
-	future_ptr<int> f1;
-
-	pool.runAsync(f, thread3, 2, 3);
-	pool.runAsync(f1, thread3, 3, 3);
+	future_ptr<int> f = pool.runAsync(thread3, 2, 3);
+	future_ptr<int> f1 = pool.runAsync(thread3, 3, 3);
 
 	std::cout << "waiting for threads" << std::endl;
 

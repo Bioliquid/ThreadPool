@@ -9,7 +9,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <iostream>
-#include "future.h"
+#include "promise.h"
 
 class ThreadPool {
 private:
@@ -26,17 +26,16 @@ public:
 	virtual ~ThreadPool();
 	void execute(std::function<void()> const&);
 
-	template<class r, class fn, class... args>
-	std::shared_ptr<future<r>> runAsync(std::shared_ptr<future<r>> &f, fn _fn, args... _args) {
+	template<class F, class... Args>
+	std::shared_ptr<future<typename std::result_of<F(Args...)>::type>> runAsync(F&& _fn, Args&&... _args) {
+		using r = std::result_of<F(Args...)>::type;
 		std::function<r()> ex_func = std::bind(_fn, _args...);
-		std::shared_ptr<future<r>> ft(new future<r>());
+		std::shared_ptr<promise<r>> ft(new promise<r>);
 		std::function<void()> func = [=]() {
-			ft->data = ex_func();
-			ft->ready = true;
+			ft->set(ex_func());
 		};
 		execute(func);
-		f = ft;
-		return ft;
+		return ft->getFuture();
 	}
 };
 
