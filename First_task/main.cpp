@@ -1,8 +1,4 @@
 #include "thread_pool.h"
-#include "future.h"
-
-template<class T>
-using future_ptr = std::shared_ptr<future<T>>;
 
 void thread1() {
 	std::cout << "thread 1\n";
