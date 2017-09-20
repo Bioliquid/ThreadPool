@@ -1,29 +1,35 @@
-#include "threadPool.h"
+#include "thread_pool.h"
+#include "future.h"
+
+template<class T>
+using future_ptr = std::shared_ptr<future<T>>;
 
 void thread1() {
-	cout << "thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	this_thread::sleep_for(chrono::milliseconds(100));
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
-	cout << "still thread 1\n";
+	std::cout << "thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
+	std::cout << "still thread 1\n";
 }
 
 void thread2() {
-	cout << "thread 2\n";
+	std::cout << "thread 2\n";
 }
 
 int main() {
-	ThreadPool pool(10);
+	ThreadPool pool(2);
 
-	pool.runAsync(thread1);
-	pool.runAsync(thread2);
-	
-	this_thread::sleep_for(chrono::milliseconds(1));
-	return 0;
+	pool.execute(thread1);
+	/*pool.execute([]() {
+		cout << "thread 2\n";
+	});*/
+	pool.execute(thread2);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
