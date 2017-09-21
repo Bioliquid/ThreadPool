@@ -4,11 +4,7 @@ ThreadPool::ThreadPool(size_t numThreads = 1) {
 	isTerminated = false;
 
 	threads.reserve(numThreads);
-<<<<<<< HEAD
 	for (int i = 0; i < (int)numThreads; ++i) {
-=======
-	for (int i = 0; i < numThreads; ++i) {
->>>>>>> 4cb6259260a88fb90cff4a65b9e8e1371ce1d24e
 		threads.emplace_back(&ThreadPool::ThreadLoop, this);
 	}
 }
