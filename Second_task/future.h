@@ -41,7 +41,6 @@ public:
 		condutex.wait(lockList, [&]() {
 			return ready;
 		});
-		//while (!ready);
 	}
 	bool isReady() {
 		return ready;
