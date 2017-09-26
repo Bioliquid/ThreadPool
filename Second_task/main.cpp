@@ -22,6 +22,16 @@ void thread2() {
 	std::cout << "thread 2\n";
 }
 
+void thread4() {
+	throw 1;
+}
+
+void thread5() {
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	std::cout << "still thread 5\n";
+	std::cout << "still thread 5\n";
+}
+
 int thread3(int a, int b) {
 	return a + b;
 }
@@ -37,12 +47,5 @@ int main() {
 	std::cout << f1->get() << std::endl;
 	f->wait();
 	std::cout << f->get() << std::endl;
-
-	/*pool.execute(thread1);
-	pool.execute([]() {
-		cout << "thread 2\n";
-	});
-	pool.execute(thread2);*/
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	system("pause");
 }
