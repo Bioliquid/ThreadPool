@@ -4,40 +4,40 @@
 #include "shared_state.h"
 
 template<typename R>
-class promise;
+class Promise;
 template<typename R>
-class promise<R&>;
+class Promise<R&>;
 template<>
-class promise<void>;
+class Promise<void>;
 
 
 template<typename R>
-class future {
+class Future {
 private:
 
-	friend class promise<R>;
+	friend class Promise<R>;
 
 	shared_state<R> *state_ptr = 0;
 
-	explicit future(shared_state<R> *ptr) {
+	explicit Future(shared_state<R> *ptr) {
 		state_ptr = ptr;
 	}
 public:
-	future(future && other) {
+	Future(Future && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	future& operator=(future && other) {
+	Future& operator=(Future && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future(future const &) = delete;
-	future &operator= (future const &) = delete;
-	future();
+	Future(Future const &) = delete;
+	Future &operator= (Future const &) = delete;
+	Future() = default;
 
-	R get() const {
+	R Get() const {
 		if (state_ptr == 0){
 			throw std::runtime_error("value is not set and promise doesn't exist");
 		}
@@ -48,11 +48,14 @@ public:
 		return state_ptr->data;
 	}
 
-	bool isReady() const {
+	bool IsReady() const {
 		return state_ptr->ready_;
 	}
 
 	void wait() const {
+		if (state_ptr == 0){
+			throw std::runtime_error("value is not set and promise doesn't exist");
+		}
 		if (state_ptr->ready_) {
 			return;
 		}
@@ -64,32 +67,32 @@ public:
 };
 
 template<typename R>
-class future<R&> {
+class Future<R&> {
 private:
 
-	friend class promise<R&>;
+	friend class Promise<R&>;
 
 	shared_state<R&> *state_ptr = 0;
 
-	explicit future(shared_state<R&> *ptr) {
+	explicit Future(shared_state<R&> *ptr) {
 		state_ptr = ptr;
 	}
 public:
-	future(future && other) {
+	Future(Future && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	future& operator=(future && other) {
+	Future& operator=(Future && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future(future const &) = delete;
-	future &operator= (future const &) = delete;
-	future();
+	Future(Future const &) = delete;
+	Future &operator= (Future const &) = delete;
+	Future() = default;
 
-	R & get() const {
+	R & Get() const {
 		if (state_ptr == 0){
 			throw std::runtime_error("value is not set and promise doesn't exist");
 		}
@@ -100,7 +103,7 @@ public:
 		return *state_ptr->data;
 	}
 
-	bool isReady() const {
+	bool IsReady() const {
 		return state_ptr->ready_;
 	}
 
@@ -116,32 +119,32 @@ public:
 };
 
 template<>
-class future<void> {
+class Future<void> {
 private:
 
-	friend class promise<void>;
+	friend class Promise<void>;
 
 	shared_state<void> *state_ptr = 0;
 
-	explicit future(shared_state<void> *ptr) {
+	explicit Future(shared_state<void> *ptr) {
 		state_ptr = ptr;
 	}
 public:
-	future(future && other) {
+	Future(Future && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	future& operator=(future && other) {
+	Future& operator=(Future && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future(future const &) = delete;
-	future &operator= (future const &) = delete;
-	future();
+	Future(Future const &) = delete;
+	Future &operator= (Future const &) = delete;
+	Future() = default;
 
-	void get() const {
+	void Get() const {
 		if (state_ptr == 0){
 			throw std::runtime_error("value is not set and promise doesn't exist");
 		}
@@ -151,7 +154,7 @@ public:
 		wait();
 	}
 
-	bool isReady() const {
+	bool IsReady() const {
 		return state_ptr->ready_;
 	}
 
@@ -166,4 +169,4 @@ public:
 	}
 };
 
-#endif //FUTURE
+#endif //Future

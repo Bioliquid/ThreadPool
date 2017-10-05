@@ -8,6 +8,16 @@
 #include <iostream>
 
 template<typename R>
+class shared_state_base {
+protected:
+	std::mutex mtx_;
+	std::atomic_bool ready_;
+	std::exception_ptr error;
+	std::condition_variable cv;
+public:
+};
+
+template<typename R>
 class shared_state {
 public:
 	std::condition_variable cv;

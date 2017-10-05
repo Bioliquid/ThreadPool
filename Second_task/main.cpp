@@ -1,19 +1,88 @@
-#include "future.h"
+//#ifdef _GTEST
+
 #include "promise.h"
-#include "shared_state.h"
-#include <iostream>
+#include "future.h"
+
 #include <thread>
+#include <gtest/gtest.h>
 
-void f1() {
-	promise<int> p;
-	int a = 5;
-	p.set(a);
-	a = 10;
-	std::cout << p.getFuture().get() << std::endl;
+TEST(promise, IsReady) {
+	Promise<int> promise;
+	Future<int> f = promise.GetFuture();
+
+
+	ASSERT_FALSE(f.IsReady());
+
+	int const x = 10;
+	promise.Set(x);
+	ASSERT_TRUE(f.IsReady());
 }
 
-int main() {
-	std::thread thread1(f1);
-	thread1.join();
-	system("pause");
+TEST(promise, Set_int) {
+	Promise<int> promise;
+	Future<int> f = promise.GetFuture();
+
+	int const x = 10;
+	promise.Set(x);
+	ASSERT_EQ(f.Get(), x);
 }
+
+TEST(promise, Set_int_ampersand) {
+	Promise<int &> promise;
+	Future<int &> f = promise.GetFuture();
+
+	int const y = 100;
+	int x = 10;
+
+	promise.Set(x);
+
+	f.Get() = y;
+
+	ASSERT_EQ(x, y);
+}
+
+TEST(promise, Set_void) {
+	Promise<void> promise;
+	Future<void> f = promise.GetFuture();
+
+	ASSERT_FALSE(f.IsReady());
+
+	promise.Set();
+
+	f.Get();
+
+	ASSERT_TRUE(f.IsReady());
+}
+
+TEST(promise, two_threads_get_set) {
+	Promise<int> promise;
+	Future<int> future = promise.GetFuture();
+
+	int x = 777;
+
+	std::thread t(
+		[x](Promise<int> promise) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+
+		promise.Set(x);
+	}, std::move(promise)
+		);
+
+	for (int i = 0; !future.IsReady(); ++i) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
+	ASSERT_EQ(future.Get(), x);
+
+	t.join();
+}
+using namespace std;
+
+int main(int argc, char *argv[]) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+
+	return 0;
+}
+
+//#endif // _GTEST

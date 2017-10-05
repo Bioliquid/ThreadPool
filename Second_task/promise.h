@@ -6,32 +6,30 @@
 #include "future.h"
 
 template<typename R>
-class promise {
+class Promise {
 private:
 	shared_state<R> *state_ptr;
 public:
-	promise(promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise(Promise && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	promise &operator= (promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise &operator= (Promise && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future<R> getFuture() {
+	Future<R> GetFuture() {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
-		return future<R>(state_ptr);
+		return Future<R>(state_ptr);
 	}
 
-	promise() {
+	Promise() {
 		state_ptr = new shared_state<R>();
 	}
 
-	void set(const R & value) {
+	void Set(const R & value) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		if (state_ptr->ready_) {
 			throw std::runtime_error("value already set");
@@ -41,7 +39,7 @@ public:
 		state_ptr->cv.notify_one();
 	}
 
-	void set(const R && value) {
+	void Set(const R && value) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		if (state_ptr->ready_) {
 			throw std::runtime_error("value already set");
@@ -51,39 +49,37 @@ public:
 		state_ptr->cv.notify_one();
 	}
 
-	void setException(const std::exception_ptr & e) {
+	void SetException(const std::exception_ptr & e) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		state_ptr->error = e;
 	}
 };
 
 template<typename R>
-class promise<R&>{
+class Promise<R&>{
 private:
 	shared_state<R&> *state_ptr;
 public:
-	promise(promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise(Promise && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	promise &operator= (promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise &operator= (Promise && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future<R&> getFuture() {
+	Future<R&> GetFuture() {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
-		return future<R&>(state_ptr);
+		return Future<R&>(state_ptr);
 	}
 
-	promise() {
+	Promise() {
 		state_ptr = new shared_state<R&>();
 	}
 
-	void set(R & value) {
+	void Set(R & value) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		if (state_ptr->ready_) {
 			throw std::runtime_error("value already set");
@@ -92,51 +88,49 @@ public:
 		state_ptr->ready_ = true;
 		state_ptr->cv.notify_one();
 	}
-	void setException(const std::exception_ptr & e) {
+	void SetException(const std::exception_ptr & e) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		state_ptr->error = e;
 	}
 };
 
 template<>
-class promise<void>{
+class Promise<void>{
 private:
 	shared_state<void> *state_ptr;
 public:
-	promise(promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise(Promise && other) {
 		state_ptr = std::move(other.state_ptr);
 	}
-	promise &operator= (promise && other) {
-		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
+	Promise &operator= (Promise && other) {
 		if (this != &other) {
 			state_ptr = std::move(other.state_ptr);
 		}
 		return *this;
 	}
 
-	future<void> getFuture() {
+	Future<void> GetFuture() {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
-		return future<void>(state_ptr);
+		return Future<void>(state_ptr);
 	}
 
-	promise() {
+	Promise() {
 		state_ptr = new shared_state<void>();
 	}
 
-	void set() {
+	void Set() {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		if (state_ptr->ready_) {
-			throw std::runtime_error("value already set");
+			throw std::runtime_error("value already Set");
 		}
 		state_ptr->ready_ = true;
 		state_ptr->cv.notify_one();
 	}
 
-	void setException(const std::exception_ptr & e) {
+	void SetException(const std::exception_ptr & e) {
 		std::unique_lock<std::mutex> lock(state_ptr->mtx_);
 		state_ptr->error = e;
 	}
 };
 
-#endif //PROMISE
+#endif //Promise
